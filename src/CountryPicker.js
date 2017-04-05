@@ -19,10 +19,11 @@ import {
   ScrollView,
   Platform,
 } from 'react-native';
+import PropTypes from 'prop-types';
 import Fuse from 'fuse.js';
 
 import cca2List from '../data/cca2';
-import { getHeightPercent } from './ratio';
+import { getHeightPercent, getWidthPercent } from './ratio';
 import CloseButton from './CloseButton';
 import countryPickerStyles from './CountryPicker.style';
 import KeyboardAvoidingView from './KeyboardAvoidingView';
@@ -35,7 +36,8 @@ let styles = {};
 // but for now just ios
 // const isEmojiable = Platform.OS === 'ios' ||
 // (Platform.OS === 'android' && Platform.Version >= 21);
-const isEmojiable = Platform.OS === 'ios';
+//const isEmojiable = Platform.OS === 'ios';
+const isEmojiable = false;
 
 if (isEmojiable) {
   countries = require('../data/countries-emoji');
@@ -52,18 +54,18 @@ const ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });
 
 export default class CountryPicker extends Component {
   static propTypes = {
-    cca2: React.PropTypes.string.isRequired,
-    translation: React.PropTypes.string,
-    onChange: React.PropTypes.func.isRequired,
-    onClose: React.PropTypes.func,
-    closeable: React.PropTypes.bool,
-    filterable: React.PropTypes.bool,
-    children: React.PropTypes.node,
-    countryList: React.PropTypes.array,
-    excludeCountries: React.PropTypes.array,
-    styles: React.PropTypes.object,
-    filterPlaceholder: React.PropTypes.string,
-    autoFocusFilter: React.PropTypes.bool,
+    cca2: PropTypes.string.isRequired,
+    translation: PropTypes.string,
+    onChange: PropTypes.func.isRequired,
+    onClose: PropTypes.func,
+    closeable: PropTypes.bool,
+    filterable: PropTypes.bool,
+    children: PropTypes.node,
+    countryList: PropTypes.array,
+    excludeCountries: PropTypes.array,
+    styles: PropTypes.object,
+    filterPlaceholder: PropTypes.string,
+    autoFocusFilter: PropTypes.bool,
   }
 
   static defaultProps = {
@@ -83,6 +85,14 @@ export default class CountryPicker extends Component {
   }
 
   static renderImageFlag(cca2, imageStyle) {
+    if (cca2 === 'AHOY') {
+      return (
+        <Image
+          style={[styles.imgStyle, imageStyle]}
+          source={require('../../../src/images/ahoy_img_icon.png')}
+        />
+      );
+    }
     return cca2 !== '' ? <Image
       style={[styles.imgStyle, imageStyle]}
       source={{ uri: countries[cca2].flag }}
@@ -90,6 +100,27 @@ export default class CountryPicker extends Component {
   }
 
   static renderFlag(cca2, itemStyle, emojiStyle, imageStyle) {
+    let ahoyImgStyle = {
+      height: 24,
+      width: 24,
+      borderRadius: 12,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: '#658AF9',
+    };
+    imageStyle = imageStyle ? {...imageStyle, ...ahoyImgStyle} : ahoyImgStyle;
+    if (!itemStyle) {
+      itemStyle = {
+        height: getHeightPercent(7),
+        width: getWidthPercent(7),
+      };
+    }
+    if (cca2 === 'AHOY') {
+      return (
+        <View style={[styles.itemCountryFlag, itemStyle]}>
+          {CountryPicker.renderImageFlag(cca2, imageStyle)}
+        </View>
+      );
+    }
     return (
       <View style={[styles.itemCountryFlag, itemStyle]}>
         {isEmojiable ?
@@ -281,7 +312,7 @@ export default class CountryPicker extends Component {
     const country = countries[cca2];
     return (
       <View style={styles.itemCountry}>
-        {CountryPicker.renderFlag(cca2)}
+        {CountryPicker.renderFlag(cca2, countryPickerStyles.itemCountryFlag)}
         <View style={styles.itemCountryName}>
           <Text style={styles.countryName}>
             {this.getCountryName(country)}
@@ -347,6 +378,7 @@ export default class CountryPicker extends Component {
                     ) => this.setVisibleListHeight(offset)
                   }
                 />
+                {/*
                 <ScrollView
                   contentContainerStyle={styles.letters}
                   keyboardShouldPersistTaps="always"
@@ -356,6 +388,7 @@ export default class CountryPicker extends Component {
                     this.state.letters.map((letter, index) => this.renderLetters(letter, index))
                   }
                 </ScrollView>
+                */}
               </View>
             </KeyboardAvoidingView>
           </View>
