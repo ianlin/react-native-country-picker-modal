@@ -263,7 +263,7 @@ export default class CountryPicker extends Component {
     const country = countries[cca2];
     return (
       <View style={styles.itemCountry}>
-        {CountryPicker.renderFlag(cca2)}
+        {CountryPicker.renderFlag(cca2, countryPickerStyles.itemCountryFlag)}
         <View style={styles.itemCountryName}>
           <Text style={styles.countryName}>
             {this.getCountryName(country)}
@@ -316,7 +316,7 @@ export default class CountryPicker extends Component {
             <KeyboardAvoidingView behavior="padding">
               <View style={styles.contentContainer}>
                 <ListView
-                  keyboardShouldPersistTaps="always"
+                  keyboardShouldPersistTaps={true}
                   enableEmptySections
                   ref={listView => this._listView = listView}
                   dataSource={this.state.dataSource}
@@ -329,15 +329,17 @@ export default class CountryPicker extends Component {
                     ) => this.setVisibleListHeight(offset)
                   }
                 />
+                {/*
                 <ScrollView
                   contentContainerStyle={styles.letters}
-                  keyboardShouldPersistTaps="always"
+                  keyboardShouldPersistTaps={true}
                 >
                   {
                     this.state.filter === '' &&
                     this.state.letters.map((letter, index) => this.renderLetters(letter, index))
                   }
                 </ScrollView>
+                */}
               </View>
             </KeyboardAvoidingView>
           </View>
